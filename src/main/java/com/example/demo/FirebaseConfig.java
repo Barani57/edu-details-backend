@@ -7,6 +7,8 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import javax.annotation.PostConstruct;
+
+import java.io.File;
 import java.io.FileInputStream;
 
 
@@ -15,9 +17,8 @@ public class FirebaseConfig {
 	 @PostConstruct
 	    public void initialize() {
 	        try {
-	            FileInputStream serviceAccount = new FileInputStream(
-	            		new ClassPathResource("serviceAccountKey.json").getFile()
-	            		);
+	        	 File file = new File("/app/serviceAccountKey.json");
+	             FileInputStream serviceAccount = new FileInputStream(file);
 	            
 	            FirebaseOptions options = FirebaseOptions.builder()
 	                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
