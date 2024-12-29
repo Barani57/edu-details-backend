@@ -13,7 +13,13 @@ public class FirebaseConfig {
 	 @PostConstruct
 	    public void initialize() {
 	        try {
-	        	 FileInputStream serviceAccount = new FileInputStream(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
+	        	 String credentialsPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+
+	             if (credentialsPath == null || credentialsPath.isEmpty()) {
+	                 throw new RuntimeException("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set.");
+	             }
+
+	             FileInputStream serviceAccount = new FileInputStream(credentialsPath);
 	            
 	            FirebaseOptions options = FirebaseOptions.builder()
 	                .setCredentials(GoogleCredentials.fromStream(serviceAccount))

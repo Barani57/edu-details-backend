@@ -1,7 +1,7 @@
 # Build stage
 FROM eclipse-temurin:17-jdk-alpine AS builder
 WORKDIR /mob_backend
-COPY . .
+COPY . . 
 RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
