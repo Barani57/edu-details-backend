@@ -18,18 +18,17 @@ import java.nio.charset.StandardCharsets;
 public class FirebaseConfig {
 	 @PostConstruct
 	    public void initialize() {
+		 
+		 String serviceAccountKey = System.getenv("FIREBASE_SERVICE_ACCOUNT_KEY");
+
+	        if (serviceAccountKey == null || serviceAccountKey.isEmpty()) {
+	            System.err.println("Error: FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set!");
+	            return;
+	        }
+		 
 		 try {
 			 
-			 String firebaseCredentials = System.getenv("FIREBASE_SERVICE_ACCOUNT_KEY");
-
-	            if (firebaseCredentials == null || firebaseCredentials.isEmpty()) {
-	                throw new IllegalArgumentException("Firebase service account key not found in environment variables.");
-	            }
-
-	            // Decode the base64 string and create an InputStream
-	            byte[] decodedBytes = java.util.Base64.getDecoder().decode(firebaseCredentials);
-	            InputStream serviceAccount = new ByteArrayInputStream(decodedBytes);
-
+			 InputStream serviceAccount = new ByteArrayInputStream(serviceAccountKey.getBytes(StandardCharsets.UTF_8));
 			 
 	            FirebaseOptions options = FirebaseOptions.builder()
 	                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))

@@ -18,4 +18,4 @@ ENV SPRING_PROFILES_ACTIVE=prod
 EXPOSE ${PORT}
 
 # Run the application
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.jar"]AA
