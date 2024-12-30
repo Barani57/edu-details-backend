@@ -1,5 +1,5 @@
 # Build stage
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /mob_backend
 COPY . . 
 RUN chmod +x mvnw
