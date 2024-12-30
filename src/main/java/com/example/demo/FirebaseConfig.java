@@ -20,20 +20,16 @@ public class FirebaseConfig {
 	    public void initialize() {
 		 try {
 			 
-			 String credPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
-	            InputStream serviceAccount;
-	            
-	            if (credPath != null && !credPath.isEmpty()) {
-	                // Use FileInputStream for absolute path from environment variable
-	                serviceAccount = new FileInputStream(credPath);
-	            } else {
-	             
-	                serviceAccount = getClass().getResourceAsStream("/serviceAccountKey.json");
+			 String firebaseCredentials = System.getenv("FIREBASE_SERVICE_ACCOUNT_KEY");
+
+	            if (firebaseCredentials == null || firebaseCredentials.isEmpty()) {
+	                throw new IllegalArgumentException("Firebase service account key not found in environment variables.");
 	            }
-	            
-	            if (serviceAccount == null) {
-	                throw new IllegalArgumentException("Firebase configuration not found");
-	            }
+
+	            // Decode the base64 string and create an InputStream
+	            byte[] decodedBytes = java.util.Base64.getDecoder().decode(firebaseCredentials);
+	            InputStream serviceAccount = new ByteArrayInputStream(decodedBytes);
+
 			 
 	            FirebaseOptions options = FirebaseOptions.builder()
 	                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
