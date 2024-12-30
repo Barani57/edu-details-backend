@@ -19,21 +19,22 @@ public class FirebaseConfig {
 	 @PostConstruct
 	    public void initialize() {
 		 try {
-			  String credPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+			 
+			 String credPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
 	            InputStream serviceAccount;
 	            
-	            if (credPath != null) {
-	                serviceAccount = new ClassPathResource(credPath).getInputStream();
+	            if (credPath != null && !credPath.isEmpty()) {
+	                // Use FileInputStream for absolute path from environment variable
+	                serviceAccount = new FileInputStream(credPath);
 	            } else {
-	                // Fallback to classpath resource
+	             
 	                serviceAccount = getClass().getResourceAsStream("/serviceAccountKey.json");
 	            }
 	            
 	            if (serviceAccount == null) {
 	                throw new IllegalArgumentException("Firebase configuration not found");
 	            }
-
-
+			 
 	            FirebaseOptions options = FirebaseOptions.builder()
 	                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
 	                    .build();
