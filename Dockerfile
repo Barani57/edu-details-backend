@@ -1,7 +1,10 @@
 # Build stage
 FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /mob_backend
-COPY . . 
+COPY pom.xml .
+COPY src ./src
+COPY mvnw .
+COPY .mvn ./.mvn
 RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
@@ -9,7 +12,7 @@ RUN ./mvnw clean package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /mob_backend
 COPY --from=builder /mob_backend/target/*.jar app.jar
-COPY --from=builder /mob_backend/src/main/resources/serviceAccountKey.json serviceAccountKey.json
+COPY src/main/resources/serviceAccountKey.json serviceAccountKey.json
 
 # Environment variables
 ENV PORT=8099
