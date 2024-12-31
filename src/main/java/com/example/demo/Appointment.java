@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,9 +17,12 @@ public class Appointment {
     private String appointmentDate;
     private String appointmentTime;
     private String imageUrl;
+    private Date createdAt;
 
     // Default constructor required for MongoDB
-    public Appointment() {}
+    public Appointment() {
+    	this.createdAt = new Date();
+    }
 
     // Constructor with all fields
     public Appointment(String id, String doctorId, String doctorName, String speciality,
@@ -34,6 +39,15 @@ public class Appointment {
         this.imageUrl = imageUrl;
     }
 
+    
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+    
     // Getters and Setters
     public String getId() {
         return id;
