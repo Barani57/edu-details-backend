@@ -122,14 +122,26 @@ public class AuthController {
         }
     }
 
-    
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String email) {
+    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
         try {
-            FirebaseAuth.getInstance().generatePasswordResetLink(email);
-            return ResponseEntity.ok().body("Password reset email sent");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error sending reset email");
+            // Retrieve user record by email
+            UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmail(email);
+            
+            // Create an update request to change the user's password
+            UserRecord.UpdateRequest updateRequest = new UserRecord.UpdateRequest(userRecord.getUid())
+                    .setPassword(newPassword);
+
+            // Update the user's password
+            FirebaseAuth.getInstance().updateUser(updateRequest);
+
+            // Return success message
+            return ResponseEntity.ok().body("Password updated successfully");
+        } catch (FirebaseAuthException e) {
+            // Handle exception and return an error message
+            return ResponseEntity.badRequest().body("Error updating password: " + e.getMessage());
         }
+        
     }
+
 }
