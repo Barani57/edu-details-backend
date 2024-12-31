@@ -110,7 +110,11 @@ public class StudentController {
         Optional<Student> student = studentService.getStudent(id);
         if (student.isPresent() && student.get().getImage() != null) {
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(student.get().getImageContentType()))
+                    .contentType(MediaType.parseMediaType(
+                        student.get().getImageContentType() != null ? 
+                        student.get().getImageContentType() : 
+                        MediaType.IMAGE_JPEG_VALUE
+                    ))
                     .body(student.get().getImage().getData());
         }
         return ResponseEntity.notFound().build();

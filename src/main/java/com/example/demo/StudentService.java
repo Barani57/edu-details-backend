@@ -111,4 +111,22 @@ public class StudentService {
 	        }
 	        return null;
 	    }
+	    
+	    private void validateAndProcessImage(Student student, MultipartFile imageFile) throws IOException {
+	        if (imageFile != null && !imageFile.isEmpty()) {
+	            // Validate file size (5MB limit)
+	            if (imageFile.getSize() > 5 * 1024 * 1024) {
+	                throw new IllegalArgumentException("File size must be less than 5MB");
+	            }
+	            
+	            // Validate file type
+	            String contentType = imageFile.getContentType();
+	            if (contentType == null || !contentType.startsWith("image/")) {
+	                throw new IllegalArgumentException("File must be an image");
+	            }
+	            
+	            student.setImage(new Binary(BsonBinarySubType.BINARY, imageFile.getBytes()));
+	            student.setImageContentType(imageFile.getContentType());
+	        }
+	    }
 }
