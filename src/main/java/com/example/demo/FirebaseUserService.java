@@ -46,6 +46,11 @@ public class FirebaseUserService {
         return firebaseUserRepository.save(user);
     }
     
+    public FirebaseUser saveFirebaseUser(FirebaseUser firebaseUser) {
+        return firebaseUserRepository.save(firebaseUser);
+    }
+
+    
     public Optional<FirebaseUser> findByFirebaseUid(String firebaseUid) {
         return firebaseUserRepository.findByFirebaseUid(firebaseUid);
     }

@@ -59,6 +59,58 @@ public class AuthController {
         }
     }
     
+    @PostMapping("/send-otp-register")
+    public ResponseEntity<?> sendOTPRegister(@RequestParam String email, @RequestParam String password) {
+        try {
+            // Check if the email already exists in Firebase or MongoDB
+            if (studentService.findByEmail(email).isPresent() || firebaseUserService.findByEmail(email).isPresent()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Email already registered"));
+            }
+
+            String otp = emailService.generateAndSendOTP(email);
+            return ResponseEntity.ok(Map.of("message", "OTP sent successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Failed to send OTP: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/verify-otp-register")
+    public ResponseEntity<?> verifyOTPRegister(@RequestParam String email, @RequestParam String otp) {
+        boolean isValid = emailService.verifyOTP(email, otp);
+        if (isValid) {
+            return ResponseEntity.ok(Map.of("message", "OTP verified successfully"));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid OTP"));
+        }
+    }
+
+    @PostMapping("/register-new-user")
+    public ResponseEntity<?> registerNewUser(@RequestParam String email, @RequestParam String password) {
+        try {
+            // Register the user in Firebase
+            UserRecord.CreateRequest request = new UserRecord.CreateRequest()
+                .setEmail(email)
+                .setPassword(password);
+            UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
+
+            FirebaseUser firebaseUser = new FirebaseUser();
+            firebaseUser.setEmail(email);
+            firebaseUser.setFirebaseUid(userRecord.getUid());
+            firebaseUser.setEmailVerified(false); // Email verification process not done yet
+            firebaseUser.setDisplayName(userRecord.getDisplayName());
+            firebaseUser.setPhotoUrl(userRecord.getPhotoUrl());
+            firebaseUser.setCreatedAt(System.currentTimeMillis());
+            firebaseUser.setLastLoginAt(System.currentTimeMillis());
+
+            firebaseUserService.saveFirebaseUser(firebaseUser);
+
+            return ResponseEntity.ok(Map.of("message", "User registered successfully"));
+        } catch (FirebaseAuthException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Firebase error");
+        }
+    }
+
+    
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) {
         try {
