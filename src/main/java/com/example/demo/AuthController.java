@@ -132,17 +132,32 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-        	 UserRecord firebaseUserRecord = FirebaseAuth.getInstance().getUserByEmail(loginRequest.getEmail());
+            // Step 1: Check Firebase for user existence and authenticate
+            UserRecord firebaseUserRecord = FirebaseAuth.getInstance().getUserByEmail(loginRequest.getEmail());
 
-             // Step 2: Check MongoDB for user details
-             Optional<Student> student = studentService.findByEmail(loginRequest.getEmail());
-             if (student.isPresent()) {
-                 return ResponseEntity.ok(student.get());
-             } else {
-                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found in database");
-             }
+            // Check if the user's email is verified in Firebase
+            if (!firebaseUserRecord.isEmailVerified()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Email not verified");
+            }
+
+            // Step 2: Check if the user exists in your FirebaseUser table (MongoDB)
+            Optional<FirebaseUser> firebaseUserOptional = firebaseUserService.findByEmail(loginRequest.getEmail());
+            if (firebaseUserOptional.isPresent()) {
+                // User found in FirebaseUser collection (MongoDB)
+                FirebaseUser firebaseUser = firebaseUserOptional.get();
+
+                // Return FirebaseUser details if found
+                return ResponseEntity.ok(firebaseUser);
+            } else {
+                // User not found in FirebaseUser collection
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found in database");
+            }
         } catch (FirebaseAuthException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Firebase error");
+            // Firebase authentication error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Firebase error: " + e.getMessage());
+        } catch (Exception e) {
+            // Catch other potential errors (like MongoDB issues)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: " + e.getMessage());
         }
     }
 
