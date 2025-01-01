@@ -16,7 +16,7 @@ public class Appointment {
     private String hospitalAddress;
     private String appointmentDate;
     private String appointmentTime;
-    private String imageUrl;
+    private String imageData;
     private Date createdAt;
 
     // Default constructor required for MongoDB
@@ -27,7 +27,7 @@ public class Appointment {
     // Constructor with all fields
     public Appointment(String id, String doctorId, String doctorName, String speciality,
                       String hospitalName, String hospitalAddress, String appointmentDate,
-                      String appointmentTime, String imageUrl) {
+                      String appointmentTime, String imageData) {
         this.id = id;
         this.doctorId = doctorId;
         this.doctorName = doctorName;
@@ -36,11 +36,12 @@ public class Appointment {
         this.hospitalAddress = hospitalAddress;
         this.appointmentDate = appointmentDate;
         this.appointmentTime = appointmentTime;
-        this.imageUrl = imageUrl;
+        this.imageData = imageData;
     }
 
     
-    public Date getCreatedAt() {
+
+	public Date getCreatedAt() {
         return createdAt;
     }
 
@@ -113,11 +114,12 @@ public class Appointment {
         this.appointmentTime = appointmentTime;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
+    public String getImageData() {
+		return imageData;
+	}
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+	public void setImageData(String imageData) {
+		this.imageData = imageData;
+	}
+
 }

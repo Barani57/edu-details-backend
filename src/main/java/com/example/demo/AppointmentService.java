@@ -38,11 +38,12 @@ public class AppointmentService {
 	            validateAppointment(appointment);
 	            
 	            // Handle image URL
-	            if (appointment.getImageUrl() != null && !appointment.getImageUrl().trim().isEmpty()) {
-	                validateImageUrl(appointment.getImageUrl());
+	            if (appointment.getImageData() != null && !appointment.getImageData().trim().isEmpty()) {
+	            	ImageUtils.validateBase64Image(appointment.getImageData());
 	            }
 	            
 	            // Save as new document
+	            // Save appointment
 	            Appointment savedAppointment = appointmentRepository.save(appointment);
 	            logger.info("Saved appointment with ID: " + savedAppointment.getId());
 	            return savedAppointment;
@@ -72,12 +73,5 @@ public class AppointmentService {
 	        }
 	        // Add more validations as needed
 	    }
-	    
-	    private void validateImageUrl(String imageUrl) {
-	        try {
-	            new URL(imageUrl);
-	        } catch (MalformedURLException e) {
-	            throw new IllegalArgumentException("Invalid image URL format");
-	        }
-	    }
+	   
 }
