@@ -37,16 +37,20 @@ public class AppointmentService {
 	            // Validate appointment data
 	            validateAppointment(appointment);
 	            
-	            // Handle image URL
 	            if (appointment.getImageData() != null && !appointment.getImageData().trim().isEmpty()) {
-	            	ImageUtils.validateBase64Image(appointment.getImageData());
+	                // First validate
+	                ImageUtils.validateBase64Image(appointment.getImageData());
+	                
+	                // Then sanitize before saving
+	                String sanitizedImageData = ImageUtils.sanitizeBase64Image(appointment.getImageData());
+	                appointment.setImageData(sanitizedImageData);
 	            }
 	            
-	            // Save as new document
 	            // Save appointment
 	            Appointment savedAppointment = appointmentRepository.save(appointment);
 	            logger.info("Saved appointment with ID: " + savedAppointment.getId());
 	            return savedAppointment;
+	            
 	        } catch (Exception e) {
 	            logger.error("Error saving appointment: ", e);
 	            throw new RuntimeException("Failed to save appointment: " + e.getMessage());
